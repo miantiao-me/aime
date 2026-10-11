@@ -137,7 +137,7 @@ struct AIAssistantView: View {
             Label("JSON 有效，将合并 \(object.count) 个字段", systemImage: "checkmark.circle.fill")
                 .foregroundStyle(Theme.success)
         } else {
-            Label("JSON 格式不正确，不会被发送", systemImage: "exclamationmark.triangle.fill")
+            Label("不是合法的 JSON 对象，不会被发送", systemImage: "exclamationmark.triangle.fill")
                 .foregroundStyle(Theme.warning)
         }
     }
@@ -223,28 +223,45 @@ struct AIAssistantView: View {
                         Button("保存并验证", action: saveKeyAndVerify)
                             .disabled(apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("自定义请求体")
-                        TextField("{\"enable_thinking\": false}", text: $extraJSON, axis: .vertical)
-                            .font(.caption.monospaced())
-                            .textFieldStyle(.roundedBorder)
-                            .lineLimit(3...7)
+                    LabeledContent {
+                        VStack(alignment: .leading, spacing: 6) {
+                            TextEditor(text: $extraJSON)
+                                .font(.caption.monospaced())
+                                .frame(minHeight: 60, maxHeight: 140)
+                                .overlay(alignment: .topLeading) {
+                                    if extraJSON.isEmpty {
+                                        Text("{\"thinking\": {\"type\": \"disabled\"}}")
+                                            .font(.caption.monospaced())
+                                            .foregroundStyle(.tertiary)
+                                            .padding(.top, 8).padding(.leading, 5)
+                                            .allowsHitTesting(false)
+                                    }
+                                }
+                            HStack(spacing: 6) {
+                                extraJSONStatus
+                            }
+                            .font(.caption)
+                        }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("自定义请求体")
+                            Text("顶层字段合并进每次请求的 body，可覆盖 temperature、max_tokens 等；model、messages、stream 由程序控制。")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 6) {
-                            Text("关闭思考：").foregroundStyle(.secondary)
+                            Text("关闭思考").foregroundStyle(.secondary)
                             ForEach(Self.thinkingPresets, id: \.title) { preset in
                                 Button(preset.title) { mergeFields(preset.fields) }
                                     .controlSize(.small)
-                                    .help(preset.hint)
+                                    .help(preset.title)
                             }
-                            Spacer()
                         }
-                        .font(.caption)
-                        HStack(spacing: 6) {
-                            extraJSONStatus
-                            Text("顶层字段合并进每次请求的 body，可覆盖 temperature、max_tokens 等参数；model、messages、stream 由程序控制，不会被覆盖。")
-                        }
-                        .font(.caption)
+                        Text("\(Self.thinkingPresets.map(\.title).joined(separator: "、")) — 按各家官方文档填入对应的关闭思考参数。")
+                            .font(.caption2).foregroundStyle(.tertiary)
                     }
+                    .font(.caption)
                 }
                 LabeledContent("状态") {
                     if providerID == "openai" {
