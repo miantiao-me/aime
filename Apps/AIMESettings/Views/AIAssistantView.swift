@@ -223,31 +223,26 @@ struct AIAssistantView: View {
                         Button("保存并验证", action: saveKeyAndVerify)
                             .disabled(apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
-                    LabeledContent {
-                        VStack(alignment: .leading, spacing: 6) {
-                            TextEditor(text: $extraJSON)
-                                .font(.caption.monospaced())
-                                .frame(minHeight: 60, maxHeight: 140)
-                                .overlay(alignment: .topLeading) {
-                                    if extraJSON.isEmpty {
-                                        Text("{\"thinking\": {\"type\": \"disabled\"}}")
-                                            .font(.caption.monospaced())
-                                            .foregroundStyle(.tertiary)
-                                            .padding(.top, 8).padding(.leading, 5)
-                                            .allowsHitTesting(false)
-                                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("自定义请求体")
+                        Text("顶层字段合并进每次请求的 body，可覆盖 temperature、max_tokens 等；model、messages、stream 由程序控制。")
+                            .font(.caption).foregroundStyle(.secondary)
+                        TextEditor(text: $extraJSON)
+                            .font(.caption.monospaced())
+                            .frame(minHeight: 60, maxHeight: 140)
+                            .overlay(alignment: .topLeading) {
+                                if extraJSON.isEmpty {
+                                    Text("{\"thinking\": {\"type\": \"disabled\"}}")
+                                        .font(.caption.monospaced())
+                                        .foregroundStyle(.tertiary)
+                                        .padding(.top, 8).padding(.leading, 5)
+                                        .allowsHitTesting(false)
                                 }
-                            HStack(spacing: 6) {
-                                extraJSONStatus
                             }
-                            .font(.caption)
+                        HStack(spacing: 6) {
+                            extraJSONStatus
                         }
-                    } label: {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("自定义请求体")
-                            Text("顶层字段合并进每次请求的 body，可覆盖 temperature、max_tokens 等；model、messages、stream 由程序控制。")
-                                .font(.caption).foregroundStyle(.secondary)
-                        }
+                        .font(.caption)
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 6) {
