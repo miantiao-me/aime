@@ -11,8 +11,8 @@ public struct AIMEFeatures: Sendable, Codable, Equatable {
     public var aiProvider = "apple"
     public var aiBaseURL = "https://api.openai.com/v1"
     public var aiModel = "gpt-5-mini"
-    /// Extra JSON object merged into every request body (`model` and `messages`
-    /// stay under program control). Empty means no extra fields.
+    /// Extra JSON object merged into every request body (`model`, `messages`
+    /// and `stream` stay under program control). Empty means no extra fields.
     public var aiExtraJSON = ""
     /// Explicit consent to send the selected text to `aiBaseURL` when polishing.
     public var aiRemoteAllowed = false

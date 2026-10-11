@@ -112,13 +112,13 @@ struct AIAssistantView: View {
     }
 
     static let thinkingPresets: [ThinkingPreset] = [
-        .init(title: "Claude", hint: "Claude（OpenRouter）", fields: ["reasoning": ["effort": "none"]]),
-        .init(title: "DeepSeek", hint: "DeepSeek / Qwen", fields: ["enable_thinking": false]),
-        .init(title: "Gemini", hint: "Gemini", fields: ["reasoning_effort": "none"]),
+        .init(title: "DeepSeek", hint: "DeepSeek：官方 thinking 参数", fields: ["thinking": ["type": "disabled"]]),
+        .init(title: "Gemini", hint: "Gemini（OpenAI 兼容接口）", fields: ["reasoning_effort": "none"]),
         .init(title: "GLM", hint: "智谱 GLM", fields: ["thinking": ["type": "disabled"]]),
-        .init(title: "Kimi", hint: "Kimi / Moonshot", fields: ["enable_thinking": false]),
-        .init(title: "OpenAI", hint: "OpenAI", fields: ["reasoning_effort": "minimal"]),
-        .init(title: "Qwen", hint: "通义 Qwen", fields: ["enable_thinking": false]),
+        .init(title: "Kimi", hint: "Kimi / Moonshot：官方 thinking 参数", fields: ["thinking": ["type": "disabled"]]),
+        .init(title: "OpenAI", hint: "OpenAI：仅推理模型（如 gpt-5、o 系列）支持；非推理模型带此字段会报错", fields: ["reasoning_effort": "none"]),
+        .init(title: "OpenRouter", hint: "OpenRouter 统一参数，适用于 Claude 等模型", fields: ["reasoning": ["effort": "none"]]),
+        .init(title: "Qwen", hint: "通义 Qwen / vLLM 部署", fields: ["enable_thinking": false]),
     ]
 
     /// Parses the box as a JSON object. nil = empty or not a valid JSON object.
@@ -241,7 +241,7 @@ struct AIAssistantView: View {
                         .font(.caption)
                         HStack(spacing: 6) {
                             extraJSONStatus
-                            Text("顶层字段合并进每次请求的 body；model 与 messages 由程序控制，不会被覆盖。")
+                            Text("顶层字段合并进每次请求的 body，可覆盖 temperature、max_tokens 等参数；model、messages、stream 由程序控制，不会被覆盖。")
                         }
                         .font(.caption)
                     }

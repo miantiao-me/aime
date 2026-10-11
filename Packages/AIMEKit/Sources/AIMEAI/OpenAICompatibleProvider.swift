@@ -8,7 +8,8 @@ public struct OpenAICompatibleProvider: AIProvider {
     public var baseURL: URL
     public var model: String
     /// User-supplied JSON object merged into every request body (top-level keys
-    /// only; `model` and `messages` are never overridden). Invalid JSON is ignored.
+    /// only; `model`, `messages` and `stream` are never overridden). Invalid JSON
+    /// is ignored.
     public let extraFieldsJSON: String
     let credentials: CredentialStore
     let session: URLSession
@@ -57,7 +58,7 @@ public struct OpenAICompatibleProvider: AIProvider {
         request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
         var body: [String: Any] = ["model": model, "temperature": temperature, "messages": messages]
         if let maxTokens { body["max_tokens"] = maxTokens }
-        for (key, value) in Self.extraFields(from: extraFieldsJSON) where key != "model" && key != "messages" {
+        for (key, value) in Self.extraFields(from: extraFieldsJSON) where !Self.reservedKeys.contains(key) {
             body[key] = value
         }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -78,6 +79,10 @@ public struct OpenAICompatibleProvider: AIProvider {
         else { throw AIError.badResponse("接口返回的不是 chat/completions 格式") }
         return (content, json["model"] as? String)
     }
+
+    /// Top-level keys the program always sets itself; the user's extra JSON can
+    /// never override them (`stream` included: the client cannot parse SSE).
+    static let reservedKeys: Set<String> = ["model", "messages", "stream"]
 
     /// Parses the user's extra-fields JSON. Anything that is not a JSON object
     /// (or is invalid) contributes nothing.
